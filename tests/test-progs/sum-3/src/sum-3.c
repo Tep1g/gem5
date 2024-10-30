@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define NUM_ROWS 5
-#define NUM_COLUMNS 5
+#define NUM_ROWS 35
+#define NUM_COLUMNS 35
 
 struct matrix_info {
-    uint8_t (*matrix)[NUM_COLUMNS];
+    uint32_t **matrix;
 };
 
 void *sum_by_row_major(void *threadid) {
@@ -31,7 +31,12 @@ void *sum_by_column_major(void *threadid) {
 }
 
 int main() {
-    uint8_t matrix[NUM_ROWS][NUM_COLUMNS] = {0};
+    uint32_t **matrix = (uint32_t **)malloc(NUM_ROWS * sizeof(uint32_t *));
+
+    for (int i = 0; i < NUM_ROWS; i++) {
+        matrix[i] = (uint32_t *)malloc(NUM_COLUMNS * sizeof(uint32_t));
+    }
+
     for (int i = 0; i < NUM_ROWS; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
             matrix[i][j] = rand();
