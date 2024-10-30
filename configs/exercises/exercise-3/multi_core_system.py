@@ -1,3 +1,4 @@
+import argparse
 import m5
 from m5.objects import *
 
@@ -32,15 +33,23 @@ system.cpu = [X86TimingSimpleCPU() for _ in range(NUM_CORES)]
 # Create L2 buses
 system.l2bus = [L2XBar() for _ in range(NUM_CORES)]
 
+parser = argparse.ArgumentParser(description='A simple system with 2-level cache.')
+parser.add_argument("--l1d_size",
+                    help="L1 data cache size. Default: Default: 64kB.")
+parser.add_argument("--l2_size",
+                    help="L2 cache size. Default: 256kB.")
+
+options = parser.parse_args()
+
 # Create L2 Caches
-system.l2cache = [L2Cache() for _ in range(NUM_CORES)]
+system.l2cache = [L2Cache(options) for _ in range(NUM_CORES)]
 
 # Repeat for each core
 for i in range(NUM_CORES):
 
     # Create L1 cache
     system.cpu[i].icache = L1ICache()
-    system.cpu[i].dcache = L1DCache()
+    system.cpu[i].dcache = L1DCache(options)
 
     # Connect core to L1 cache
     system.cpu[i].icache.connectCPU(system.cpu[i])
