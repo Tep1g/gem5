@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 #define NUM_ROWS 35
 #define NUM_COLUMNS 35
@@ -18,6 +19,7 @@ void *sum_by_row_major(void *threadid) {
             sum += info->matrix[i][j];
         }
     }
+    printf("Row major thread finished at tick %d\n", clock());
 }
 
 void *sum_by_column_major(void *threadid) {
@@ -28,6 +30,7 @@ void *sum_by_column_major(void *threadid) {
             sum += info->matrix[i][j];
         }
     }
+    printf("Column major thread finished at tick %d\n", clock());
 }
 
 int main() {
