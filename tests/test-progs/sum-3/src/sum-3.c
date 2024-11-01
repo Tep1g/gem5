@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <time.h>
 
-#define NUM_ROWS 35
-#define NUM_COLUMNS 35
+#define NUM_ROWS 50
+#define NUM_COLUMNS 50
 
 struct matrix_info {
     uint32_t **matrix;
