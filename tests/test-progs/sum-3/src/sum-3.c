@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <time.h>
+#include <sys/time.h>
 
 #define NUM_ROWS 50
 #define NUM_COLUMNS 50
@@ -11,31 +11,35 @@ struct matrix_info {
     uint32_t **matrix;
 };
 
-void *sum_by_row_major(void *threadid) {
-    clock_t start_ticks = clock();
-    printf("Row major thread started at tick %d\n", start_ticks);
-    struct matrix_info *info = (struct matrix_info *) threadid;
+void *sum_by_row_major(uint32_t **matrix) {
+    struct timeval t_start, t_stop, t_result;
+    gettimeofday(&t_start, NULL);
+    printf("Row major thread started\n");
     uint32_t sum = 0;
     for (int i = 0; i < NUM_ROWS; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
-            sum += info->matrix[i][j];
-        }
-    }
-    clock_t stop_ticks = clock() - start_ticks;
-    printf("Row major thread finished in %u ticks\nSum: %u\n", stop_ticks, sum);
-}
-
-void *sum_by_column_major(uint32_t **matrix) {
-    clock_t start_ticks = clock();
-    printf("Column major thread started at tick %d\n", start_ticks);
-    uint32_t sum = 0;
-    for (int j = 0; j < NUM_COLUMNS; j++) {
-        for (int i = 0; i < NUM_ROWS; i++) {
             sum += matrix[i][j];
         }
     }
-    clock_t stop_ticks = clock() - start_ticks;
-    printf("Column major thread finished in %u ticks\nSum: %u\n", stop_ticks, sum);
+    gettimeofday(&t_stop, NULL);
+    timersub(&t_stop, &t_start, &t_result);
+    printf("Row major thread finished in %u microseconds\nSum: %u\n", (long int)t_result.tv_usec, sum);
+}
+
+void *sum_by_column_major(void *threadid) {
+    struct timeval t_start, t_stop, t_result;
+    gettimeofday(&t_start, NULL);
+    struct matrix_info *info = (struct matrix_info *) threadid;
+    printf("Column major thread started\n");
+    uint32_t sum = 0;
+    for (int j = 0; j < NUM_COLUMNS; j++) {
+        for (int i = 0; i < NUM_ROWS; i++) {
+            sum += info->matrix[i][j];
+        }
+    }
+    gettimeofday(&t_stop, NULL);
+    timersub(&t_stop, &t_start, &t_result);
+    printf("Column major thread finished in %u microseconds\nSum: %u\n", (long int)t_result.tv_usec, sum);
 }
 
 int main() {
@@ -54,10 +58,10 @@ int main() {
     info.matrix = matrix;
     
     pthread_t row_major_thread;
-    pthread_create(&row_major_thread, NULL, sum_by_row_major, (void *)&info);
+    pthread_create(&row_major_thread, NULL, sum_by_column_major, (void *)&info);
 
     // Execute the last thread with this thread context to appease SE mode
-    sum_by_column_major(matrix);
+    sum_by_row_major(matrix);
 
     pthread_join(row_major_thread, NULL);
     return 0;
