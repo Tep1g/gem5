@@ -20,7 +20,7 @@ void *sum_by_row_major(void *threadid) {
             sum += info->matrix[i][j];
         }
     }
-    printf("Row major thread finished at tick %d\n", clock());
+    printf("Row major thread finished at tick %u\nSum: %u\n", clock(), sum);
 }
 
 void *sum_by_column_major(uint32_t **matrix) {
@@ -31,7 +31,7 @@ void *sum_by_column_major(uint32_t **matrix) {
             sum += matrix[i][j];
         }
     }
-    printf("Column major thread finished at tick %d\n", clock());
+    printf("Column major thread finished at tick %u\nSum: %u\n", clock(), sum);
 }
 
 int main() {
