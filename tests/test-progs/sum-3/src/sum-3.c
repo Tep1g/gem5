@@ -12,7 +12,8 @@ struct matrix_info {
 };
 
 void *sum_by_row_major(void *threadid) {
-    printf("Row major thread started at tick %d\n", clock());
+    clock_t start_ticks = clock();
+    printf("Row major thread started at tick %d\n", start_ticks);
     struct matrix_info *info = (struct matrix_info *) threadid;
     uint32_t sum = 0;
     for (int i = 0; i < NUM_ROWS; i++) {
@@ -20,18 +21,21 @@ void *sum_by_row_major(void *threadid) {
             sum += info->matrix[i][j];
         }
     }
-    printf("Row major thread finished at tick %u\nSum: %u\n", clock(), sum);
+    clock_t stop_ticks = clock() - start_ticks;
+    printf("Row major thread finished in %u ticks\nSum: %u\n", stop_ticks, sum);
 }
 
 void *sum_by_column_major(uint32_t **matrix) {
-    printf("Column major thread started at tick %d\n", clock());
+    clock_t start_ticks = clock();
+    printf("Column major thread started at tick %d\n", start_ticks);
     uint32_t sum = 0;
     for (int j = 0; j < NUM_COLUMNS; j++) {
         for (int i = 0; i < NUM_ROWS; i++) {
             sum += matrix[i][j];
         }
     }
-    printf("Column major thread finished at tick %u\nSum: %u\n", clock(), sum);
+    clock_t stop_ticks = clock() - start_ticks;
+    printf("Column major thread finished in %u ticks\nSum: %u\n", stop_ticks, sum);
 }
 
 int main() {
