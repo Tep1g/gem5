@@ -30,19 +30,28 @@ system.membus = SystemXBar()
 # Create x86 timing cores
 system.cpu = [X86TimingSimpleCPU() for _ in range(NUM_CORES)]
 
-# Create L2 buses
-system.l2bus = [L2XBar() for _ in range(NUM_CORES)]
-
 parser = argparse.ArgumentParser(description='A simple system with 2-level cache.')
 parser.add_argument("--l1d_size",
                     help="L1 data cache size. Default: Default: 64kB.")
 parser.add_argument("--l2_size",
                     help="L2 cache size. Default: 256kB.")
+parser.add_argument("--shared_l2",
+                    action='store_true',
+                    help="Whether L2 cache is shared among cores")
 
 options = parser.parse_args()
 
-# Create L2 Caches
-system.l2cache = [L2Cache(options) for _ in range(NUM_CORES)]
+# Create L2 Cache(s) and bus(es)
+if options.shared_l2 == True:
+    system.l2cache = L2Cache(options)
+    system.l2bus = L2XBar()
+    
+    # Connect L2 cache to memory bus
+    system.l2cache.connectCPUSideBus(system.l2bus)
+    system.l2cache.connectMemSideBus(system.membus)
+else:    
+    system.l2cache = [L2Cache(options) for _ in range(NUM_CORES)]
+    system.l2bus = [L2XBar() for _ in range(NUM_CORES)]
 
 # Repeat for each core
 for i in range(NUM_CORES):
@@ -56,12 +65,16 @@ for i in range(NUM_CORES):
     system.cpu[i].dcache.connectCPU(system.cpu[i])
 
     # Connect L2 bus to L1 cache
-    system.cpu[i].icache.connectBus(system.l2bus[i])
-    system.cpu[i].dcache.connectBus(system.l2bus[i])
+    if options.shared_l2:
+        system.cpu[i].icache.connectBus(system.l2bus)
+        system.cpu[i].dcache.connectBus(system.l2bus)
+    else:
+        system.cpu[i].icache.connectBus(system.l2bus[i])
+        system.cpu[i].dcache.connectBus(system.l2bus[i])
 
-    # Connect L2 cache to memory bus
-    system.l2cache[i].connectCPUSideBus(system.l2bus[i])
-    system.l2cache[i].connectMemSideBus(system.membus)
+        # Connect L2 cache to memory bus
+        system.l2cache[i].connectCPUSideBus(system.l2bus[i])
+        system.l2cache[i].connectMemSideBus(system.membus)
 
     # Create interrupt controller
     system.cpu[i].createInterruptController()
