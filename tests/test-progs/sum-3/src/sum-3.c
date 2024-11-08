@@ -57,12 +57,12 @@ int main() {
     struct matrix_info info;
     info.matrix = matrix;
     
-    pthread_t row_major_thread;
-    pthread_create(&row_major_thread, NULL, sum_by_column_major, (void *)&info);
+    pthread_t column_major_thread;
+    pthread_create(&column_major_thread, NULL, sum_by_column_major, (void *)&info);
 
     // Execute the last thread with this thread context to appease SE mode
     sum_by_row_major(matrix);
 
-    pthread_join(row_major_thread, NULL);
+    pthread_join(column_major_thread, NULL);
     return 0;
 }
