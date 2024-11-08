@@ -20,9 +20,9 @@ system.clk_domain = SrcClockDomain()
 system.clk_domain.clock = '3GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
 
-# Set RAM size to 8GB
+# Set RAM size to 16GB
 system.mem_mode = 'timing'
-system.mem_ranges = [AddrRange('8GB')]
+system.mem_ranges = [AddrRange('16GB')]
 
 # Create memory bus
 system.membus = SystemXBar()
