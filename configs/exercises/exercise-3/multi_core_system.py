@@ -42,10 +42,10 @@ parser.add_argument("--shared_l2",
 options = parser.parse_args()
 
 # Create L2 Cache(s) and bus(es)
-if options.shared_l2 == True:
+if options.shared_l2:
     system.l2cache = L2Cache(options)
     system.l2bus = L2XBar()
-    
+
     # Connect L2 cache to memory bus
     system.l2cache.connectCPUSideBus(system.l2bus)
     system.l2cache.connectMemSideBus(system.membus)
