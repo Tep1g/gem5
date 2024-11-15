@@ -1255,6 +1255,9 @@ BaseCache::access(PacketPtr pkt, CacheBlk *&blk, Cycles &lat,
 
     DPRINTF(Cache, "%s for %s %s\n", __func__, pkt->print(),
             blk ? "hit " + blk->print() : "miss");
+    if (pkt->req->hasPC()) {
+        DPRINTF(Cache, "PC %x\n", pkt->req->getPC());
+    }
 
     if (pkt->req->isCacheMaintenance()) {
         // A cache maintenance operation is always forwarded to the
