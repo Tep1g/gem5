@@ -94,7 +94,7 @@ system.mem_ctrl.dram.range = system.mem_ranges[0]
 system.mem_ctrl.port = system.membus.mem_side_ports
 
 # Set path to binary file
-binary = 'tests/test-progs/sum-3/bin/x86/linux/sum-3'
+binary = 'tests/test-progs/sum-4/bin/x86/linux/sum-4'
 
 # for gem5 V21 and beyond
 system.workload = SEWorkload.init_compatible(binary)
