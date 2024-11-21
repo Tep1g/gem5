@@ -75,24 +75,29 @@ int main() {
     generate_indexes(column_indexes);
     shuffle(row_indexes, NUM_ROWS);
     shuffle(column_indexes, NUM_COLUMNS);
-    uint32_t **matrix = (uint32_t **)malloc(NUM_ROWS * sizeof(uint32_t *));
+    uint32_t **matrix1 = (uint32_t **)malloc(NUM_ROWS * sizeof(uint32_t *));
+    uint32_t **matrix2 = (uint32_t **)malloc(NUM_ROWS * sizeof(uint32_t *));
 
     for (int i = 0; i < NUM_ROWS; i++) {
-        matrix[i] = (uint32_t *)malloc(NUM_COLUMNS * sizeof(uint32_t));
+        matrix1[i] = (uint32_t *)malloc(NUM_COLUMNS * sizeof(uint32_t));
+        matrix2[i] = (uint32_t *)malloc(NUM_COLUMNS * sizeof(uint32_t));
     }
 
     for (int i = 0; i < NUM_ROWS; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
-            matrix[i][j] = j;
+            matrix1[i][j] = j;
+            matrix2[i][j] = j;
         }
     }
-    struct matrix_info info;
-    info.matrix = matrix;
+    struct matrix_info info1;
+    struct matrix_info info2;
+    info1.matrix = matrix1;
+    info2.matrix = matrix2;
     
     pthread_t column_major_thread;
     pthread_t row_major_thread;
-    pthread_create(&column_major_thread, NULL, sum_by_column_major, (void *)&info);
-    pthread_create(&row_major_thread, NULL, sum_by_row_major, (void *)&info);
+    pthread_create(&column_major_thread, NULL, sum_by_column_major, (void *)&info1);
+    pthread_create(&row_major_thread, NULL, sum_by_row_major, (void *)&info2);
 
     pthread_join(column_major_thread, NULL);
     pthread_join(row_major_thread, NULL);
